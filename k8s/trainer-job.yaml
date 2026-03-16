@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: trainer-job
+  namespace: ticket-mlops
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: trainer
+          image: ticket-trainer:1.0
+          env:
+            - name: MLFLOW_TRACKING_URI
+              value: "http://mlflow.ticket-mlops.svc.cluster.local:5000"
+            - name: MLFLOW_EXPERIMENT_NAME
+              value: "ticket-router-exp"
+            - name: MODEL_NAME
+              value: "ticket-router"
+            - name: PROMOTE_TO_PROD
+              value: "true"
+      # If you want to mount a dataset:
+      #   volumes:
+      #     - name: data-vol
+      #       configMap: { ... } OR use PVC
+      #   volumeMounts:
+      #     - name: data-vol
+      #       mountPath: /app/data
